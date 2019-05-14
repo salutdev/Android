@@ -17,4 +17,12 @@
     <string name="on_going_all_out">ON GOING ALL OUT</string>
     <string name="find_a_team">Find a team in your city and dominate the league</string>
     <string name="get_started">Get Started</string>
+    <string name="i_am_a">I am a:</string>
+    <string name="beginner">Beginner</string>
+    <string name="beginner_off">Beginner Off</string>
+    <string name="beginner_on">Beginner On</string>
+    <string name="baller">Baller</string>
+    <string name="baller_off">Baller Off</string>
+    <string name="baller_on">Baller On</string>
+    <string name="finish">Finish</string>
 </resources>
