@@ -22,7 +22,7 @@ class LeagueActivity : BaseActivity() {
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState?.putParcelable(EXTRA_PLAYER, player)
-        Log.d(TAG,"Leageue: --- onSaveInstanceState -----")
+        Log.d(TAG,"LeagueActivity: --- onSaveInstanceState -----")
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
@@ -31,7 +31,7 @@ class LeagueActivity : BaseActivity() {
         if (savedInstanceState != null) {
             player = savedInstanceState.getParcelable(EXTRA_PLAYER)
         }
-        Log.d(TAG,"Leageue: --- onRestoreInstanceState -----")
+        Log.d(TAG,"LeagueActivity: --- onRestoreInstanceState -----")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
