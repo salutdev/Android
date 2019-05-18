@@ -1,5 +1,6 @@
 package com.example.coderswag.Controller
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -10,6 +11,7 @@ import com.example.coderswag.Adapters.CategoryRecycleAdapter
 import com.example.coderswag.Model.Category
 import com.example.coderswag.R
 import com.example.coderswag.Services.DataService
+import com.example.coderswag.Utitities.EXTRA_CATEGERY
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +30,10 @@ class MainActivity : AppCompatActivity() {
             Toast
                 .makeText(this, "This is click on ${category.title} category", Toast.LENGTH_SHORT)
                 .show()
+
+            val intent = Intent(this, ProductActivity::class.java)
+            intent.putExtra(EXTRA_CATEGERY, category.title)
+            startActivity(intent)
         }
         categoryListView.adapter = adapter
 
