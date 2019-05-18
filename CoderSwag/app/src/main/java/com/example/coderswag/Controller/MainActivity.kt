@@ -24,11 +24,21 @@ class MainActivity : AppCompatActivity() {
 
         //adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, DataService.categories)
         //adapter = CategoryAdapter(this, DataService.categories)
-        adapter = CategoryRecycleAdapter(this, DataService.categories)
+        adapter = CategoryRecycleAdapter(this, DataService.categories /*, ::itemClick */) { category ->
+            Toast
+                .makeText(this, "This is click on ${category.title} category", Toast.LENGTH_SHORT)
+                .show()
+        }
         categoryListView.adapter = adapter
 
         val layoutManager = LinearLayoutManager(this)
         categoryListView.layoutManager = layoutManager
         categoryListView.hasFixedSize()
+    }
+
+    private fun itemClick(category: Category) {
+        Toast
+            .makeText(this, "This is click on ${category.title} category", Toast.LENGTH_SHORT)
+            .show()
     }
 }
