@@ -1,5 +1,6 @@
 package com.example.coderswag.Controller
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -9,6 +10,7 @@ import android.widget.Toast
 import com.example.coderswag.Adapters.ProductAdapter
 import com.example.coderswag.R
 import com.example.coderswag.Services.DataService
+import com.example.coderswag.Utilities.PRODUCT
 import com.example.coderswag.Utitities.EXTRA_CATEGERY
 import kotlinx.android.synthetic.main.activity_product.*
 
@@ -24,7 +26,11 @@ class ProductActivity : AppCompatActivity() {
         val listOfProducts = DataService.getProducts(categoryTitle)
 
         productAdapter = ProductAdapter(this, listOfProducts) { product ->
-            Toast.makeText(this, "${product.title} is clicked", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "${product.title} is clicked", Toast.LENGTH_SHORT).show()
+
+            val intent = Intent(this, ProductDetailActivity::class.java)
+            intent.putExtra(PRODUCT, product)
+            startActivity(intent)
         }
 
         productListView.adapter = productAdapter
