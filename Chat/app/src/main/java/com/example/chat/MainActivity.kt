@@ -11,6 +11,8 @@ import android.support.design.widget.NavigationView
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
+import android.view.View
+import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +29,10 @@ class MainActivity : AppCompatActivity() {
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+
+        addChannelBtn.setOnClickListener {
+
+        }
     }
 
     override fun onBackPressed() {
@@ -36,5 +42,13 @@ class MainActivity : AppCompatActivity() {
         } else {
             super.onBackPressed()
         }
+    }
+
+    fun loginBtnNavHeaderClicked(view: View) {
+
+    }
+
+    fun sendMessageBtnClicked(view: View) {
+        
     }
 }
