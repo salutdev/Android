@@ -1,5 +1,6 @@
 package com.example.chat
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
@@ -45,7 +46,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loginBtnNavHeaderClicked(view: View) {
-
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
     }
 
     fun sendMessageBtnClicked(view: View) {
