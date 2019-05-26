@@ -1,9 +1,10 @@
-package com.example.chat
+package com.example.chat.Controller
 
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import com.example.chat.R
 import kotlinx.android.synthetic.main.activity_create_user.*
 import kotlin.random.Random
 
