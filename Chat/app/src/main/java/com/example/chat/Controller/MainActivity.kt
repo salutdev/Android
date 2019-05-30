@@ -2,6 +2,7 @@ package com.example.chat.Controller
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.StrictMode
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v4.widget.DrawerLayout
@@ -32,6 +33,11 @@ class MainActivity : AppCompatActivity() {
 
         addChannelBtn.setOnClickListener {
 
+        }
+
+        if (android.os.Build.VERSION.SDK_INT > 9) {
+            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+            StrictMode.setThreadPolicy(policy)
         }
     }
 
