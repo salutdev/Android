@@ -8,9 +8,15 @@ import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.chat.Utilities.URL_LOGIN
 import com.example.chat.Utilities.URL_REGISTER
+import org.json.JSONException
 import org.json.JSONObject
 
 object AuthService {
+
+    var isLoggedIn = false
+    var userEmail = ""
+    var authToken = ""
+
     fun registerUser(context: Context, email: String, password: String, complete: (Boolean)->Unit) {
         val jsonBody = JSONObject()
         jsonBody.put("email", email)
@@ -49,8 +55,16 @@ object AuthService {
             URL_LOGIN,
             null,
             Response.Listener {response ->
-                println(response)
-                complete(true)
+
+                try {
+                    userEmail = response.getString("user")
+                    authToken = response.getString("token")
+                    isLoggedIn = true
+                    complete(true)
+                } catch (e: JSONException) {
+                    Log.d("JSON", "EXC: " + e.localizedMessage)
+                    complete(false)
+                }
             },
             Response.ErrorListener {error ->
                 Log.d("ERROR", "Could not register user: $error")
