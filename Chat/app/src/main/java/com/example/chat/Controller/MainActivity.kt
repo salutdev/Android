@@ -43,11 +43,6 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-//        if (android.os.Build.VERSION.SDK_INT > 9) {
-//            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-//            StrictMode.setThreadPolicy(policy)
-//        }
-
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver, IntentFilter(
             BROADCAST_USER_DATA_CHANGE))
     }
@@ -79,7 +74,7 @@ class MainActivity : AppCompatActivity() {
     fun loginBtnNavHeaderClicked(view: View) {
         if (AuthService.isLoggedIn) {
             UserDataService.logout()
-            userNameNavHeader.text = "Login"
+            userNameNavHeader.text = ""
             userEmailNavHeader.text = ""
             userImageNavHeader.setImageResource(R.drawable.profiledefault)
             userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
