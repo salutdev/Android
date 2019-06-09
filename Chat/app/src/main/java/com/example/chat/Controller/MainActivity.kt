@@ -18,12 +18,15 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import com.example.chat.Model.Channel
 import com.example.chat.R
 import com.example.chat.Services.AuthService
+import com.example.chat.Services.MessageService
 import com.example.chat.Services.UserDataService
 import com.example.chat.Utilities.BROADCAST_USER_DATA_CHANGE
 import com.example.chat.Utilities.SOCKET_URL
 import io.socket.client.IO
+import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -50,6 +53,7 @@ class MainActivity : AppCompatActivity() {
             BROADCAST_USER_DATA_CHANGE))
 
         socket.connect()
+        socket.on("channelCreated", onNewChannel)
 
         addChannelBtn.setOnClickListener {
             if (AuthService.isLoggedIn) {
@@ -69,6 +73,21 @@ class MainActivity : AppCompatActivity() {
                     }
                     .show()
             }
+        }
+    }
+
+    private val onNewChannel = Emitter.Listener {args ->
+        runOnUiThread {
+            val name = args[0] as String
+            val description = args[1] as String
+            val id = args[2] as String
+
+            val newChannel = Channel(name, description, id)
+            MessageService.channels.add(newChannel)
+
+            println(newChannel.name)
+            println(newChannel.description)
+            println(newChannel.id)
         }
     }
 
