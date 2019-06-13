@@ -1,6 +1,7 @@
 package com.example.chat.Services
 
 import android.graphics.Color
+import com.example.chat.Controller.App
 import java.util.*
 
 object UserDataService {
@@ -17,9 +18,9 @@ object UserDataService {
         email = ""
         name = ""
 
-        AuthService.authToken = ""
-        AuthService.userEmail = ""
-        AuthService.isLoggedIn = false
+        App.prefs.authToken = ""
+        App.prefs.userEmail = ""
+        App.prefs.isLoggedIn = false
     }
 
     fun getAvatarColor() : Int {
