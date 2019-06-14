@@ -29,12 +29,14 @@ import com.example.chat.Utilities.SOCKET_URL
 import io.socket.client.IO
 import io.socket.emitter.Emitter
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity() {
 
     val socket = IO.socket(SOCKET_URL)
     lateinit var channelsAdapter: ArrayAdapter<Channel>
+    var seletedChannel: Channel? = null
 
     private  fun setupAdapters() {
         channelsAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
@@ -64,6 +66,12 @@ class MainActivity : AppCompatActivity() {
         socket.on("channelCreated", onNewChannel)
         setupAdapters()
 
+        channel_list.setOnItemClickListener { _, _, position, _ ->
+            seletedChannel = MessageService.channels[position]
+            drawerLayout.closeDrawer(GravityCompat.START)
+            updateWithChannel()
+        }
+
         if (App.prefs.isLoggedIn) {
             AuthService.findUser(this) {}
         }
@@ -73,7 +81,7 @@ class MainActivity : AppCompatActivity() {
                 val builder = AlertDialog.Builder(this)
                 val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
                 builder.setView(dialogView)
-                    .setPositiveButton("Add") {dialog, which ->  
+                    .setPositiveButton("Add") {_, _ ->
                         val nameTextField = dialogView.findViewById<EditText>(R.id.addChannelNameTxt)
                         val descTextField = dialogView.findViewById<EditText>(R.id.addChannelDescTxt)
                         val channelName = nameTextField.text.toString()
@@ -81,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
                         socket.emit("newChannel", channelName, channelDesc)
                     }
-                    .setNegativeButton("Cancel") {dialog, which ->
+                    .setNegativeButton("Cancel") {_, _ ->
 
                     }
                     .show()
@@ -123,13 +131,21 @@ class MainActivity : AppCompatActivity() {
 
                 loginBtnNavHeader.text = "Logout"
 
-                MessageService.getChannels(context) {complete ->
+                MessageService.getChannels {complete ->
                     if (complete) {
-                        channelsAdapter.notifyDataSetChanged()
+                        if (MessageService.channels.count() > 0) {
+                            seletedChannel = MessageService.channels[0]
+                            channelsAdapter.notifyDataSetChanged()
+                            updateWithChannel()
+                        }
                     }
                 }
             }
         }
+    }
+
+    fun updateWithChannel() {
+        mainChannelName.text = "#${seletedChannel?.name}"
     }
 
     fun hideKeyboard() {
@@ -158,6 +174,7 @@ class MainActivity : AppCompatActivity() {
             loginBtnNavHeader.text = "Login"
             MessageService.channels.clear()
             channelsAdapter.notifyDataSetChanged()
+            mainChannelName.setText("Please Log In")
         } else {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
