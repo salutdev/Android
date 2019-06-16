@@ -23,7 +23,7 @@
             android:inputType="textMultiLine"
             android:gravity="start|top"
             android:ems="10"
-            android:id="@+id/editText" android:layout_marginBottom="8dp"
+            android:id="@+id/msgTxt" android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent" android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="8dp"
             app:layout_constraintStart_toStartOf="parent" android:hint="Message:"/>
@@ -31,16 +31,16 @@
             android:layout_width="35dp"
             android:layout_height="35dp" app:srcCompat="@android:drawable/ic_menu_send"
             android:id="@+id/sendMessageBtn"
-            android:tint="@color/colorPrimary" app:layout_constraintEnd_toEndOf="@+id/editText"
+            android:tint="@color/colorPrimary" app:layout_constraintEnd_toEndOf="@+id/msgTxt"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="@+id/editText"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="@+id/msgTxt"
             android:background="@android:color/transparent" android:onClick="sendMessageBtnClicked"/>
     <android.support.v7.widget.RecyclerView
             android:layout_width="395dp"
             android:layout_height="579dp"
             app:layout_constraintTop_toBottomOf="@+id/mainChannelName" app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/editText"
+            app:layout_constraintBottom_toTopOf="@+id/msgTxt"
             android:id="@+id/messageListView"/>
 
 </android.support.constraint.ConstraintLayout>

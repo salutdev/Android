@@ -20,6 +20,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import com.example.chat.Model.Channel
+import com.example.chat.Model.Message
 import com.example.chat.R
 import com.example.chat.Services.AuthService
 import com.example.chat.Services.MessageService
@@ -64,6 +65,8 @@ class MainActivity : AppCompatActivity() {
 
         socket.connect()
         socket.on("channelCreated", onNewChannel)
+        socket.on("messageCreated", onNewMessage)
+
         setupAdapters()
 
         channel_list.setOnItemClickListener { _, _, position, _ ->
@@ -110,6 +113,22 @@ class MainActivity : AppCompatActivity() {
             println(newChannel.description)
             println(newChannel.id)
             channelsAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private val onNewMessage = Emitter.Listener { args ->
+        runOnUiThread {
+            val msgBody = args[0] as String
+            val channelId = args[2] as String
+            val userName = args[3] as String
+            val userAvatar = args[4] as String
+            val avatarColor = args[5] as String
+            val id = args[6] as String
+            val timeStamp = args[7] as String
+
+            val newMessage = Message(msgBody, userName, channelId, userAvatar, avatarColor, id, timeStamp)
+            MessageService.messages.add(newMessage)
+            println(newMessage.message)
         }
     }
 
@@ -182,6 +201,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendMessageBtnClicked(view: View) {
+        if (App.prefs.isLoggedIn && msgTxt.text.isNotEmpty() && seletedChannel != null) {
+            val userId = UserDataService.id
+            val channelId = seletedChannel?.id
+            socket.emit("newMessage", msgTxt.text.toString(), userId, channelId,
+                UserDataService.name, UserDataService.avatarName, UserDataService.avatarColor)
+
+            msgTxt.text.clear()
+        }
+
         hideKeyboard()
     }
 }
