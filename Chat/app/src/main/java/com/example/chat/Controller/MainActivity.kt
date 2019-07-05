@@ -13,11 +13,13 @@ import android.support.design.widget.NavigationView
 import android.support.v4.content.LocalBroadcastManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import com.example.chat.Adapters.MessageAdapter
 import com.example.chat.Model.Channel
 import com.example.chat.Model.Message
 import com.example.chat.R
@@ -36,11 +38,17 @@ class MainActivity : AppCompatActivity() {
 
     val socket = IO.socket(SOCKET_URL)
     lateinit var channelsAdapter: ArrayAdapter<Channel>
+    lateinit var messageAdapter: MessageAdapter
     var selectedChannel: Channel? = null
 
     private  fun setupAdapters() {
         channelsAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, MessageService.channels)
         channel_list.adapter = channelsAdapter
+
+        messageAdapter = MessageAdapter(this, MessageService.messages)
+        messageListView.adapter = messageAdapter
+        val layoutManager = LinearLayoutManager(this)
+        messageListView.layoutManager = layoutManager
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,7 +139,9 @@ class MainActivity : AppCompatActivity() {
 
                     val newMessage = Message(msgBody, userName, channelId, userAvatar, avatarColor, id, timeStamp)
                     MessageService.messages.add(newMessage)
-                    println(newMessage.message)
+
+                    messageAdapter.notifyDataSetChanged()
+                    messageListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
                 }
             }
         }
@@ -174,8 +184,9 @@ class MainActivity : AppCompatActivity() {
         if (selectedChannel != null) {
             MessageService.getMessages(selectedChannel!!.id) {complete ->
                 if (complete) {
-                    for (msg in MessageService.messages) {
-                        println(msg.message)
+                    messageAdapter.notifyDataSetChanged()
+                    if (messageAdapter.itemCount > 0) {
+                        messageListView.smoothScrollToPosition(messageAdapter.itemCount - 1)
                     }
                 }
             }
@@ -201,6 +212,8 @@ class MainActivity : AppCompatActivity() {
     fun loginBtnNavHeaderClicked(view: View) {
         if (App.prefs.isLoggedIn) {
             UserDataService.logout()
+            channelsAdapter.notifyDataSetChanged()
+            messageAdapter.notifyDataSetChanged()
             userNameNavHeader.text = ""
             userEmailNavHeader.text = ""
             userImageNavHeader.setImageResource(R.drawable.profiledefault)

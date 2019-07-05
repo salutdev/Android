@@ -26,6 +26,10 @@ object UserDataService {
     }
 
     fun getAvatarColor() : Int {
+        return getAvatarColor(avatarColor)
+    }
+
+    fun getAvatarColor(avatarColor: String) : Int {
 
         val strippedColor = avatarColor
             .replace("[", "")
