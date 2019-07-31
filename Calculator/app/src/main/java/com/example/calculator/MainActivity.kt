@@ -2,6 +2,7 @@ package com.example.calculator
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 import java.text.DecimalFormat
 
@@ -104,5 +105,7 @@ class MainActivity : AppCompatActivity() {
         val strVal = num.toString()
         labelString = "$labelString$strVal"
         updateText()
+
+        Log.d("TAG", "Test log")
     }
 }
