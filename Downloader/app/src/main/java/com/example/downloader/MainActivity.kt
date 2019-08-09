@@ -41,6 +41,7 @@ class MainActivity : AppCompatActivity() {
             override fun onPostExecute(result: String?) {
                 super.onPostExecute(result)
                 Log.d(TAG, "onPostExecute: parameter is $result")
+                git 
             }
 
             private fun downloadRSS(urlPath: String?): String {
