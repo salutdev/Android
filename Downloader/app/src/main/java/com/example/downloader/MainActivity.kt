@@ -1,15 +1,20 @@
 package com.example.downloader
 
+import android.content.Context
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.lang.Exception
 import java.lang.StringBuilder
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
+import kotlin.properties.Delegates
 
 class FeedEntry {
     var name: String = ""
@@ -30,6 +35,7 @@ class FeedEntry {
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
+    private val downloadData by lazy { DownloadData(this, xmlListView) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,14 +43,26 @@ class MainActivity : AppCompatActivity() {
 
         Log.d(TAG, "onCreate: called")
 
-        val downloadData = DownloadData()
         downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topMovies/xml")
         Log.d(TAG, "onCreate: done")
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        downloadData.cancel(true)
+    }
+
     companion object {
-        private class DownloadData : AsyncTask<String, Void, String>() {
+        private class DownloadData(context: Context, listView: ListView) : AsyncTask<String, Void, String>() {
             private val TAG = "DownloadData"
+            var propContext: Context by Delegates.notNull()
+            var propListView: ListView by Delegates.notNull()
+
+            init {
+                propContext = context
+                propListView = listView
+            }
+
 
             override fun doInBackground(vararg url: String?): String {
                 Log.d(TAG, "doInBackground: starts with ${url[0]}")
@@ -58,7 +76,14 @@ class MainActivity : AppCompatActivity() {
             override fun onPostExecute(result: String) {
                 super.onPostExecute(result)
                 Log.d(TAG, "onPostExecute: parameter is $result")
-                MoviesParser().parse(result)
+                val movieParser = MoviesParser()
+                movieParser.parse(result)
+
+//                val arrayAdapter = ArrayAdapter<FeedEntry>(propContext, R.layout.list_item, movieParser.movies)
+//                propListView.adapter = arrayAdapter
+
+                val feedAdapter = FeedAdapter(propContext, R.layout.list_record, movieParser.movies)
+                propListView.adapter = feedAdapter
             }
 
             private fun downloadRSS(urlPath: String?): String {
