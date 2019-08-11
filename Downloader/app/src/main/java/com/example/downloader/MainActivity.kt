@@ -5,14 +5,10 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.ArrayAdapter
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.ListView
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.IOException
-import java.lang.Exception
-import java.lang.StringBuilder
-import java.net.HttpURLConnection
-import java.net.MalformedURLException
 import java.net.URL
 import kotlin.properties.Delegates
 
@@ -35,21 +31,50 @@ class FeedEntry {
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
-    private val downloadData by lazy { DownloadData(this, xmlListView) }
+    //private val downloadData by lazy { DownloadData(this, xmlListView) }
+    private var downloadData: DownloadData? = null
+
+    private val feedMoviesUrl = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topMovies/xml"
+    private val feedTopSongsUrl = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topsongs/limit=25/xml"
+    private val feedTopTVSeasonsUrl = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topTvSeasons/xml"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Log.d(TAG, "onCreate: called")
-
-        downloadData.execute("http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topMovies/xml")
-        Log.d(TAG, "onCreate: done")
+        downloadUrl(feedMoviesUrl)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        downloadData.cancel(true)
+        downloadData?.cancel(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.feeds_menu, menu)
+
+        return true
+    }
+
+    private fun downloadUrl(feedUrl: String) {
+        Log.d(TAG, "downloadUrl: called")
+        downloadData = DownloadData(this, xmlListView)
+        downloadData?.execute(feedUrl)
+        Log.d(TAG, "downloadUrl: done")
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val feedUrl: String
+        when (item.itemId) {
+            R.id.mnuMovies -> feedUrl = feedMoviesUrl
+            R.id.mnuTopSongs -> feedUrl = feedTopSongsUrl
+            R.id.mnuTopTVSeasons -> feedUrl = feedTopTVSeasonsUrl
+            else -> return super.onOptionsItemSelected(item)
+        }
+
+        downloadUrl(feedUrl)
+        return true
     }
 
     companion object {
