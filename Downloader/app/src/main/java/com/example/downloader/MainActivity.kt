@@ -35,41 +35,99 @@ class MainActivity : AppCompatActivity() {
     private var downloadData: DownloadData? = null
 
     private val feedMoviesUrl = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topMovies/xml"
-    private val feedTopSongsUrl = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topsongs/limit=25/xml"
+    private val feedTopSongsUrlTemplate = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topsongs/limit=%d/xml"
     private val feedTopTVSeasonsUrl = "http://ax.itunes.apple.com/WebObjects/MZStoreServices.woa/ws/RSS/topTvSeasons/xml"
 
+    private val STATE_URL = "StateUrl"
+    private val STATE_REC_NUM = "StateRecNum"
+    private var currentUrl = ""
+    private var currentRecNum = 10
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        downloadUrl(feedMoviesUrl)
+        Log.d(TAG, "onCreate: called")
+        setContentView(R.layout.activity_main)
+        var url = feedMoviesUrl.format(10)
+
+        if (savedInstanceState != null) {
+            val stateUrl = savedInstanceState.getString(STATE_URL)
+            if (stateUrl != null) {
+                url = stateUrl
+            }
+
+            currentRecNum = savedInstanceState.getInt(STATE_REC_NUM)
+        }
+
+//        outState.putString(STATE_URL, currentUrl)
+//        outState.putInt(STATE_REC_NUM, currentRecNum)
+
+        downloadUrl(url)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d(TAG, "onDestroy: called")
         downloadData?.cancel(true)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Log.d(TAG, "onSaveInstanceState: called")
+        outState.putString(STATE_URL, currentUrl)
+        outState.putInt(STATE_REC_NUM, currentRecNum)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.feeds_menu, menu)
-
+        if (currentRecNum == 10) {
+            menu?.findItem(R.id.mnu10)?.isChecked = true
+        } else if (currentRecNum == 25) {
+            menu?.findItem(R.id.mnu25)?.isChecked = true
+        }
         return true
     }
 
     private fun downloadUrl(feedUrl: String) {
-        Log.d(TAG, "downloadUrl: called")
-        downloadData = DownloadData(this, xmlListView)
-        downloadData?.execute(feedUrl)
-        Log.d(TAG, "downloadUrl: done")
+        if (feedUrl != currentUrl) {
+            Log.d(TAG, "downloadUrl: called")
+            downloadData = DownloadData(this, xmlListView)
+            downloadData?.execute(feedUrl)
+            currentUrl = feedUrl
+            Log.d(TAG, "downloadUrl: done")
+        } else {
+            Log.d(TAG, "downloadUrl: URL is not changed")
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val feedUrl: String
+        var feedUrl: String = ""
         when (item.itemId) {
             R.id.mnuMovies -> feedUrl = feedMoviesUrl
-            R.id.mnuTopSongs -> feedUrl = feedTopSongsUrl
+            R.id.mnuTopSongs -> feedUrl = feedTopSongsUrlTemplate.format(25)
             R.id.mnuTopTVSeasons -> feedUrl = feedTopTVSeasonsUrl
+            R.id.mnu10 -> {
+                if (!item.isChecked) {
+                    item.isChecked = true
+                    feedUrl = feedTopSongsUrlTemplate.format(10)
+                    currentRecNum = 10
+                } else {
+                    currentUrl = feedUrl
+                }
+            }
+            R.id.mnu25 -> {
+                if (!item.isChecked) {
+                    item.isChecked = true
+                    feedUrl = feedTopSongsUrlTemplate.format(25)
+                    currentRecNum = 25
+                } else {
+                    currentUrl = feedUrl
+                }
+            }
+            R.id.mnuRefresh -> {
+                feedUrl = currentUrl
+                currentUrl = ""
+            }
             else -> return super.onOptionsItemSelected(item)
         }
 
