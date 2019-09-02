@@ -1,5 +1,6 @@
 package com.example.youtubeplayer
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,12 +13,14 @@ import com.google.android.youtube.player.YouTubeInitializationResult
 import com.google.android.youtube.player.YouTubePlayer
 import com.google.android.youtube.player.YouTubePlayerView
 
-const val YOUTUBE_VIDEO_ID = "PySo_6S4ZAg"
+const val YOUTUBE_VIDEO_ID = "AwQHqWyHRpU"
 const val YOUTUBE_PLAYLIST = "PLA89DCFA6ADACE599"
 
 class YoutubeActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListener {
 
     private val TAG = "YoutubeActivity"
+    private val DIALOG_REQUEST_CODE = 1
+    private val playerView by lazy { YouTubePlayerView(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +35,6 @@ class YoutubeActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 //        button1.text = "Button Added"
 //        layout.addView(button1)
 
-        val playerView = YouTubePlayerView(this)
         playerView.layoutParams = ConstraintLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
 
@@ -50,7 +52,10 @@ class YoutubeActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         player?.setPlayerStateChangeListener(playerStateChangeListener)
         player?.setPlaybackEventListener(playbackEventListener)
         if (!wasRestored) {
-            player?.cueVideo(YOUTUBE_VIDEO_ID)
+            //player?.cueVideo(YOUTUBE_VIDEO_ID)
+            player?.loadVideo(YOUTUBE_VIDEO_ID)
+        } else {
+            player?.play()
         }
     }
 
@@ -58,7 +63,7 @@ class YoutubeActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
 
         val REQUEST_CODE = 0
         if (youTubeInitializationResult?.isUserRecoverableError == true) {
-            youTubeInitializationResult.getErrorDialog(this, REQUEST_CODE).show()
+            youTubeInitializationResult.getErrorDialog(this, DIALOG_REQUEST_CODE).show()
         } else {
             val errorMessage = "There was an error Initializing youtubePlayer"
             Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show()
@@ -107,6 +112,19 @@ class YoutubeActivity : YouTubeBaseActivity(), YouTubePlayer.OnInitializedListen
         }
 
         override fun onError(p0: YouTubePlayer.ErrorReason?) {
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        Log.d(TAG, "onActivityResult called with response $resultCode for request $requestCode")
+
+        if (requestCode == DIALOG_REQUEST_CODE) {
+            Log.d(TAG, "${intent?.toString()}")
+            Log.d(TAG, "${intent?.extras?.toString()}")
+
+            playerView.initialize(getString(R.string.google_api_key), this)
         }
     }
 }
