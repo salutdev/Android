@@ -23,11 +23,12 @@ class PhotoDetailsActivity : BaseActivity() {
 
         activateToolbar(true)
 
-        val photo = intent.getSerializableExtra(PHOTO_TRANSFER) as Photo
+//        val photo = intent.getSerializableExtra(PHOTO_TRANSFER) as Photo
+        val photo = intent.extras?.getParcelable<Photo>(PHOTO_TRANSFER) as Photo
 
-        photo_title.text = photo.title
-        photo_author.text = photo.author
-        photo_tags.text = photo.tags
+        photo_title.text = photo?.title
+        photo_author.text = photo?.author
+        photo_tags.text = photo?.tags
 
         Picasso.get().load(photo.link)
             .error(R.drawable.placeholder)
